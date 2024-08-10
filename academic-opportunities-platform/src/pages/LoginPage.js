@@ -1,79 +1,72 @@
+// src/pages/LoginPage.js
 import React, { useState } from 'react';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import './LoginPage.module.css';
+import { login, googleLogin } from '../services/authService';
+import { useNavigate } from 'react-router-dom';
 
-
-const clientId = 'YOUR_GOOGLE_CLIENT_ID';
+const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 function LoginPage() {
-  const [isRegistering, setIsRegistering] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const onSuccess = (response) => {
-    console.log('Login Success:', response);
-    alert('Logged in successfully!');
-  };
-
-  const onFailure = (response) => {
-    console.log('Login failed:', response);
-    alert('Failed to login.');
-  };
-
-  const handleSubmit = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (isRegistering) {
-      if (password !== confirmPassword) {
-        alert("Passwords do not match!");
-        return;
-      }
-      console.log('Registering:', { name, email, password });
-      // Handle registration logic here
-    } else {
-      console.log('Logging in:', { email, password });
-      // Handle login logic here
+    try {
+      const data = await login(email, password);
+      localStorage.setItem('token', data.token);
+      navigate('/profile');
+    } catch (error) {
+      setError(error.response.data.message);
+    }
+  };
+
+  const handleGoogleLogin = async (response) => {
+    try {
+      const data = await googleLogin(response.credential);
+      localStorage.setItem('token', data.token);
+      navigate('/profile');
+    } catch (error) {
+      setError('Google login failed');
     }
   };
 
   return (
     <GoogleOAuthProvider clientId={clientId}>
       <div>
-        <h1>{isRegistering ? 'Register' : 'Login'} Page</h1>
-        <form onSubmit={handleSubmit}>
-          {isRegistering && (
-            <>
-              <div>
-                <label>Name</label>
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
-              </div>
-            </>
-          )}
+        <h1>Login</h1>
+        <form onSubmit={handleLogin}>
           <div>
             <label>Email</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
           <div>
             <label>Password</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
-          {isRegistering && (
-            <>
-              <div>
-                <label>Confirm Password</label>
-                <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-              </div>
-            </>
-          )}
-          <button type="submit">{isRegistering ? 'Register' : 'Login'}</button>
+          {error && <p>{error}</p>}
+          <button type="submit">Login</button>
         </form>
-        <button onClick={() => setIsRegistering(!isRegistering)}>
-          {isRegistering ? 'Switch to Login' : 'Switch to Register'}
-        </button>
         <div>
           <h2>Or</h2>
-          <GoogleLogin onSuccess={onSuccess} onError={onFailure} />
+          <GoogleLogin
+            onSuccess={handleGoogleLogin}
+            onError={() => {
+              setError('Google login failed');
+            }}
+          />
         </div>
       </div>
     </GoogleOAuthProvider>
@@ -81,4 +74,3 @@ function LoginPage() {
 }
 
 export default LoginPage;
-

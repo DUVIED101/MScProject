@@ -1,0 +1,6 @@
+runtime: nodejs20
+entrypoint: node index.js
+
+handlers:
+  - url: /.*
+    script: auto

@@ -10,13 +10,13 @@ function Navigation() {
           <Link to="/">Home</Link>
         </li>
         <li>
-          <Link to="/profile">Profile</Link>
-        </li>
-        <li>
-          <Link to="/main">Main</Link>
-        </li>
-        <li>
           <Link to="/login">Login</Link>
+        </li>
+        <li>
+          <Link to="/register">Register</Link>
+        </li>
+        <li>
+          <Link to="/profile">Profile</Link>
         </li>
       </ul>
     </nav>
@@ -24,3 +24,4 @@ function Navigation() {
 }
 
 export default Navigation;
+
