@@ -1,0 +1,62 @@
+.opportunity-posting-form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f5f5f5;
+  }
+  
+  .opportunity-posting-form h2 {
+    text-align: center;
+    color: #333;
+  }
+  
+  .opportunity-posting-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+  }
+  
+  .opportunity-posting-form input,
+  .opportunity-posting-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .opportunity-posting-form input[type="file"] {
+    padding: 3px;
+  }
+  
+  .opportunity-posting-form button {
+    width: 100%;
+    padding: 12px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  
+  .opportunity-posting-form button:hover {
+    background-color: #218838;
+  }
+  
+  .success-message {
+    color: green;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .error-message {
+    color: red;
+    text-align: center;
+    margin-bottom: 20px;
+  }
