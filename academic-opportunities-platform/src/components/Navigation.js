@@ -18,6 +18,9 @@ function Navigation() {
         <li>
           <Link to="/profile">Profile</Link>
         </li>
+        <li>
+          <Link to="/post-opportunity">Post Opportunity</Link>
+        </li>
       </ul>
     </nav>
   );
