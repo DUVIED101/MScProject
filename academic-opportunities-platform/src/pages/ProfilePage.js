@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getProfile } from '../services/authService';
+import { getProfile } from '../services/authService';  // Make sure this function sends the correct API request
 import { useNavigate } from 'react-router-dom';
 
 function ProfilePage() {
@@ -11,14 +11,22 @@ function ProfilePage() {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem('token');
+        
         if (!token) {
           navigate('/login');
-        } else {
-          const data = await getProfile(token);
-          setProfile(data);
+          return;
         }
+
+        const data = await getProfile(token);
+        setProfile(data);
       } catch (error) {
-        setError(error.response.data.message);
+        if (error.response && error.response.status === 401) {
+          // Token expired or invalid
+          localStorage.removeItem('token');
+          navigate('/login');
+        } else {
+          setError(error.response ? error.response.data.message : 'Failed to fetch profile');
+        }
       }
     };
 
@@ -28,15 +36,18 @@ function ProfilePage() {
   return (
     <div>
       <h1>User Profile</h1>
-      {error && <p>{error}</p>}
-      {profile && (
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {profile ? (
         <div>
-          <p>Name: {profile.name}</p>
-          <p>Email: {profile.email}</p>
+          <p><strong>Name:</strong> {profile.name}</p>
+          <p><strong>Email:</strong> {profile.email}</p>
         </div>
+      ) : (
+        !error && <p>Loading profile...</p>
       )}
     </div>
   );
 }
 
 export default ProfilePage;
+
