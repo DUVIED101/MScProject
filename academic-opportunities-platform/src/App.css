@@ -36,3 +36,24 @@
     transform: rotate(360deg);
   }
 }
+.search-bar {
+  margin: 20px 0;
+  display: flex;
+  gap: 10px;
+}
+
+.search-results ul,
+.recommendations ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.search-results li,
+.recommendations li {
+  margin-bottom: 15px;
+}
+
+.search-results h2,
+.recommendations h2 {
+  margin-bottom: 20px;
+}

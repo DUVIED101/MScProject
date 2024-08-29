@@ -21,7 +21,7 @@ function PostOpportunityPage() {
     }
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_OPPORTUNITY_SERVICE_URL}/api/opportunities`, {
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_OPPORTUNITY_URL}/api/opportunities`, {
         title,
         description,
         location,

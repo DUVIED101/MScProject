@@ -11,14 +11,24 @@ nav ul {
   justify-content: space-around;
 }
 
-nav li a {
+nav li a, nav li button {
   display: block;
   color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
   text-align: center;
   padding: 14px 20px;
   text-decoration: none;
+  font-size: 16px;
 }
 
-nav li a:hover {
+nav li a:hover, nav li button:hover {
   background-color: #111;
+}
+
+nav li button {
+  font-family: inherit; /* Ensures the button text uses the same font as the rest of the navigation */
+  font-size: inherit; /* Inherits the font size */
+  color: white; /* Ensures the color matches */
 }

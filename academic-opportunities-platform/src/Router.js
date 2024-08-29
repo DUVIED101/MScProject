@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
 import Navigation from './components/Navigation';
 import PostOpportunityPage from './pages/PostOpportunityPage';
+import SearchPage from './pages/SearchPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function AppRouter() {
@@ -25,6 +26,7 @@ function AppRouter() {
             </ProtectedRoute>
           }
         />
+        <Route path="/search" element={<SearchPage />} />
       </Routes>
     </Router>
   );

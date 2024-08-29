@@ -1,2 +1,3 @@
 backend/user-service/.env
 academic-opportunities-platform/.env
+backend/opportunity-service/.env

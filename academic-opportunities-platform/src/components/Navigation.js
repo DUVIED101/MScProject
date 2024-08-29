@@ -1,22 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Navigation.css';
+import { AuthContext } from '../AuthContext.js';  
 
 function Navigation() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, logout } = useContext(AuthContext); 
   const navigate = useNavigate();
 
-  // Check if the user is logged in by checking for a token in localStorage
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token); // Set true if token exists, otherwise false
-  }, []);
-
-  // Handle logging out the user
   const handleLogout = () => {
-    localStorage.removeItem('token'); // Remove the token from localStorage
-    setIsLoggedIn(false); // Set the state to not logged in
-    navigate('/login'); // Redirect to login page
+    logout(); 
+    navigate('/login'); 
   };
 
   return (
@@ -25,18 +18,31 @@ function Navigation() {
         <li>
           <Link to="/">Home</Link>
         </li>
-        <li>
-          <Link to="/login">Login</Link>
-        </li>
-        <li>
-          <Link to="/register">Register</Link>
-        </li>
-        <li>
-          <Link to="/profile">Profile</Link>
-        </li>
-        <li>
-          <Link to="/post-opportunity">Post Opportunity</Link>
-        </li>
+        {isLoggedIn ? (
+          <>
+            <li>
+              <Link to="/profile">Profile</Link>
+            </li>
+            <li>
+              <Link to="/post-opportunity">Post Opportunity</Link>
+            </li>
+            <li>
+              <button onClick={handleLogout}>Logout</button>
+            </li>
+            <li>
+              <Link to="/search">Search Opportunities</Link>
+            </li>
+          </>
+        ) : (
+          <>
+            <li>
+              <Link to="/login">Login</Link>
+            </li>
+            <li>
+              <Link to="/register">Register</Link>
+            </li>
+          </>
+        )}
       </ul>
     </nav>
   );
