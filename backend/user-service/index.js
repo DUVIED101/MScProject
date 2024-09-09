@@ -39,10 +39,10 @@ app.post('/api/auth/register', async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
-    const userId = uuidv4();  // Generating a unique user ID
+    const userId = uuidv4();
 
-    // Hashing the password before storing it
-    const hashedPassword = await bcrypt.hash(password, 10);  // 10 rounds of salting
+    // The following code hashes the password using bcrypt lib
+    const hashedPassword = await bcrypt.hash(password, 10); 
 
     await database.runTransactionAsync(async (transaction) => {
       const query = {
@@ -85,7 +85,7 @@ app.post('/api/auth/login', async (req, res) => {
 
     const user = rows[0].toJSON();
 
-    // Compare the password with the hashed password
+    // Compare the passwords
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(400).json({ message: 'Invalid email or password' });
@@ -129,6 +129,11 @@ app.get('/api/auth/profile', authenticateToken, async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
+});
+
+// Token verification endpoint
+app.get('/api/auth/verify', authenticateToken, (req, res) => {
+  res.json(req.user);  // Send back the user data if token is valid
 });
 
 // Start the server

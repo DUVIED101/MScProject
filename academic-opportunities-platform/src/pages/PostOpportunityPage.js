@@ -7,6 +7,8 @@ function PostOpportunityPage() {
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
   const [deadline, setDeadline] = useState('');
+  const [educationLevel, setEducationLevel] = useState('');
+  const [subjectFilters, setSubjectFilters] = useState('');
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
@@ -20,12 +22,16 @@ function PostOpportunityPage() {
       return navigate('/login');
     }
 
+    const subjectArray = subjectFilters.split(',').map(subject => subject.trim()); // Process subjects as an array
+
     try {
       const response = await axios.post(`${process.env.REACT_APP_BACKEND_OPPORTUNITY_URL}/api/opportunities`, {
         title,
         description,
         location,
         deadline,
+        educationLevel,
+        subjectFilters: subjectArray,
       }, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -39,6 +45,8 @@ function PostOpportunityPage() {
       setDescription('');
       setLocation('');
       setDeadline('');
+      setEducationLevel('');
+      setSubjectFilters('');
     } catch (error) {
       setError('Failed to post opportunity. Please try again.');
     }
@@ -82,6 +90,25 @@ function PostOpportunityPage() {
             type="date"
             value={deadline}
             onChange={(e) => setDeadline(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Education Level</label>
+          <input
+            type="text"
+            value={educationLevel}
+            onChange={(e) => setEducationLevel(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Subject Filters (comma separated)</label>
+          <input
+            type="text"
+            value={subjectFilters}
+            onChange={(e) => setSubjectFilters(e.target.value)}
+            placeholder="e.g., Math, Science, Engineering"
             required
           />
         </div>

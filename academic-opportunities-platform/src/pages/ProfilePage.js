@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getProfile } from '../services/authService';  // Make sure this function sends the correct API request
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function ProfilePage() {
   const [profile, setProfile] = useState(null);
@@ -41,6 +41,8 @@ function ProfilePage() {
         <div>
           <p><strong>Name:</strong> {profile.name}</p>
           <p><strong>Email:</strong> {profile.email}</p>
+          {/* Link to view the user's posted opportunities */}
+          <Link to="/opportunities">View Your Opportunities</Link>
         </div>
       ) : (
         !error && <p>Loading profile...</p>
@@ -50,4 +52,3 @@ function ProfilePage() {
 }
 
 export default ProfilePage;
-
