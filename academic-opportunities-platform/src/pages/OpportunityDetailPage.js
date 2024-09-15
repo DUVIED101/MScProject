@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 function OpportunityDetailPage() {
@@ -46,6 +47,10 @@ function OpportunityDetailPage() {
           <p><strong>Deadline:</strong> {opportunity.Deadline}</p>
           <p><strong>Education Level:</strong> {opportunity.EducationLevel}</p>
           <p><strong>Subjects:</strong> {opportunity.SubjectFilters.join(', ')}</p>
+
+          <Link to={`/opportunities/${opportunity.OpportunityID}/apply`}>
+            <button>Apply for this Opportunity</button>
+          </Link>
         </div>
       ) : (
         !error && <p>Loading opportunity details...</p>

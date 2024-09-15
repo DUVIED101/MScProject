@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "@google-cloud/spanner": "^7.14.0",
+    "@grpc/grpc-js": "^1.11.2",
     "axios": "^1.7.4",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",

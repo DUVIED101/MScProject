@@ -31,7 +31,7 @@ async function authenticateToken(req, res, next) {
         Authorization: token,
       },
     });
-    req.user = response.data; // Attach user data to the request
+    req.user = response.data; 
     next();
   } catch (error) {
     console.error('Token verification failed:', error);
@@ -59,7 +59,7 @@ app.post('/api/opportunities', authenticateToken, async (req, res) => {
           description,
           location,
           deadline,
-          postedBy: req.user.userId, // Authenticated user's ID
+          postedBy: req.user.userId, 
           educationLevel,
           subjectFilters,
         },
@@ -75,7 +75,7 @@ app.post('/api/opportunities', authenticateToken, async (req, res) => {
   }
 });
 
-// GET: Get all opportunities (with filter by postedBy)
+// GET: Get all opportunities posted by a specific user
 app.get('/api/opportunities', authenticateToken, async (req, res) => {
   try {
     const query = {
@@ -134,7 +134,7 @@ app.put('/api/opportunities/:id', authenticateToken, async (req, res) => {
           description,
           location,
           deadline,
-          postedBy: req.user.userId, // Ensure the user owns the opportunity
+          postedBy: req.user.userId,
           educationLevel,
           subjectFilters,
         },
@@ -168,6 +168,75 @@ app.delete('/api/opportunities/:id', authenticateToken, async (req, res) => {
   } catch (err) {
     console.error('Transaction ERROR:', err);
     res.status(500).json({ error: 'Failed to delete opportunity' });
+  }
+});
+
+
+// POST: Apply for an opportunity
+app.post('/api/opportunities/:id/apply', authenticateToken, async (req, res) => {
+  const { motivationLetter } = req.body;  // Only expecting the motivation letter
+  const opportunityID = req.params.id;
+  const applicationID = uuidv4();
+
+  // Ensure the motivation letter is provided
+  if (!motivationLetter) {
+    return res.status(400).json({ message: 'Motivation letter is required' });
+  }
+
+  try {
+    await database.runTransactionAsync(async (transaction) => {
+      const query = {
+        sql: `INSERT INTO Applications (ApplicationID, OpportunityID, UserID, ApplicationDate, MotivationLetter)
+              VALUES (@applicationID, @opportunityID, @userID, PENDING_COMMIT_TIMESTAMP(), @motivationLetter)`,
+        params: {
+          applicationID,
+          opportunityID,
+          userID: req.user.userId,
+          motivationLetter,
+        },
+      };
+
+      await transaction.runUpdate(query);
+      await transaction.commit();
+      res.status(200).json({ message: 'Application submitted successfully!', applicationID });
+    });
+  } catch (err) {
+    console.error('Transaction ERROR:', err);
+    res.status(500).json({ error: 'Failed to submit application' });
+  }
+});
+
+// GET: Get all applications for a user
+app.get('/api/applications', authenticateToken, async (req, res) => {
+  try {
+    const query = {
+      sql: `SELECT * FROM Applications WHERE UserID = @userID`,
+      params: { userID: req.user.userId },
+    };
+
+    const [rows] = await database.run(query);
+    res.json(rows.map(row => row.toJSON()));
+  } catch (error) {
+    console.error('Fetch ERROR:', error);
+    res.status(500).json({ message: 'Failed to fetch applications' });
+  }
+});
+
+// GET: Get all applications for an opportunity (admin view)
+app.get('/api/opportunities/:id/applications', authenticateToken, async (req, res) => {
+  const opportunityID = req.params.id;
+
+  try {
+    const query = {
+      sql: `SELECT * FROM Applications WHERE OpportunityID = @opportunityID`,
+      params: { opportunityID },
+    };
+
+    const [rows] = await database.run(query);
+    res.json(rows.map(row => row.toJSON()));
+  } catch (error) {
+    console.error('Fetch ERROR:', error);
+    res.status(500).json({ message: 'Failed to fetch applications for opportunity' });
   }
 });
 

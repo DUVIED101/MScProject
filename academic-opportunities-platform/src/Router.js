@@ -10,6 +10,7 @@ import OpportunityListPage from './pages/OpportunityListPage';
 import EditOpportunityPage from './pages/EditOpportunityPage';
 import SearchPage from './pages/SearchPage';
 import OpportunityDetailPage from './pages/OpportunityDetailPage';
+import ApplicationFormPage from './pages/ApplicationFormPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function AppRouter() {
@@ -47,6 +48,7 @@ function AppRouter() {
         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/opportunities/:opportunityID" element={<OpportunityDetailPage />} />
+        <Route path="/opportunities/:opportunityID/apply" element={<ApplicationFormPage />} />
       </Routes>
     </Router>
   );
