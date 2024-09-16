@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getProfile } from '../services/authService';  // Make sure this function sends the correct API request
+import { getProfile } from '../services/authService';
 import { useNavigate, Link } from 'react-router-dom';
 
 function ProfilePage() {
@@ -41,8 +41,14 @@ function ProfilePage() {
         <div>
           <p><strong>Name:</strong> {profile.name}</p>
           <p><strong>Email:</strong> {profile.email}</p>
-          {/* Link to view the user's posted opportunities */}
-          <Link to="/opportunities">View Your Opportunities</Link>
+          <Link to="/opportunities">
+            <button>View Your Opportunities</button>
+          </Link>
+          <br/>
+          <br/>
+          <Link to="/my-applications">
+            <button>View Opportunities You Applied For</button>
+          </Link>
         </div>
       ) : (
         !error && <p>Loading profile...</p>

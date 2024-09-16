@@ -27,10 +27,10 @@ function Navigation() {
               <Link to="/post-opportunity">Post Opportunity</Link>
             </li>
             <li>
-              <button onClick={handleLogout}>Logout</button>
+              <Link to="/search">Search Opportunities</Link>
             </li>
             <li>
-              <Link to="/search">Search Opportunities</Link>
+              <button onClick={handleLogout}>Logout</button>
             </li>
           </>
         ) : (
