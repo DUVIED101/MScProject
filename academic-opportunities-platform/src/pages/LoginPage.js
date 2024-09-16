@@ -1,8 +1,9 @@
-// src/pages/LoginPage.js
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import { login, googleLogin } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { AuthContext } from '../AuthContext';
+
 
 const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
@@ -11,22 +12,28 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const data = await login(email, password);
-      localStorage.setItem('token', data.token);
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_USER_URL}/api/auth/login`, {
+        email,
+        password,
+      });
+      login(response.data.token); //function to update context
       navigate('/profile');
     } catch (error) {
-      setError(error.response.data.message);
+      setError(error.response ? error.response.data.message : 'Login failed');
     }
   };
 
   const handleGoogleLogin = async (response) => {
     try {
-      const data = await googleLogin(response.credential);
-      localStorage.setItem('token', data.token);
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_USER_URL}/api/auth/google`, {
+        tokenId: response.credential,
+      });
+      login(response.data.token);
       navigate('/profile');
     } catch (error) {
       setError('Google login failed');
@@ -56,7 +63,7 @@ function LoginPage() {
               required
             />
           </div>
-          {error && <p>{error}</p>}
+          {error && <p style={{ color: 'red' }}>{error}</p>}
           <button type="submit">Login</button>
         </form>
         <div>
