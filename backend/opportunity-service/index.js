@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const { Spanner } = require('@google-cloud/spanner');
 const { v4: uuidv4 } = require('uuid');
 const axios = require('axios');
+const multer = require('multer'); 
+const { Storage } = require('@google-cloud/storage');
 require('dotenv').config();
 
 const app = express();
@@ -17,6 +19,14 @@ const spanner = new Spanner({
 
 const instance = spanner.instance(process.env.SPANNER_INSTANCE_ID);
 const database = instance.database(process.env.SPANNER_DATABASE_ID);
+
+const storage = new Storage();
+const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
+
+const upload = multer({
+  storage: multer.memoryStorage(), // Store files in memory before uploading to GCS
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB file size limit
+});
 
 // Middleware to check JWT and authenticate user via User Service
 async function authenticateToken(request, response, next) {
@@ -173,35 +183,71 @@ app.delete('/api/opportunities/:id', authenticateToken, async (req, res) => {
 
 
 // POST: Apply for an opportunity
-app.post('/api/opportunities/:id/apply', authenticateToken, async (req, res) => {
-  const { motivationLetter } = req.body;  // Only expecting the motivation letter
+app.post('/api/opportunities/:id/apply', authenticateToken, upload.single('cv'), async (req, res) => {
+  const { motivationLetter } = req.body;
   const opportunityID = req.params.id;
   const applicationID = uuidv4();
+  let cvUrl = null;
 
   if (!motivationLetter) {
     return res.status(400).json({ message: 'Motivation letter is required' });
   }
 
-  try {
-    await database.runTransactionAsync(async (transaction) => {
-      const query = {
-        sql: `INSERT INTO Applications (ApplicationID, OpportunityID, UserID, ApplicationDate, MotivationLetter)
-              VALUES (@applicationID, @opportunityID, @userID, PENDING_COMMIT_TIMESTAMP(), @motivationLetter)`,
-        params: {
-          applicationID,
-          opportunityID,
-          userID: req.user.userId,
-          motivationLetter,
+  // If a CV is uploaded, upload it to GCS
+  if (req.file) {
+    try {
+      const blob = bucket.file(`cvs/${applicationID}-${req.file.originalname}`);
+      const blobStream = blob.createWriteStream({
+        resumable: false,
+        metadata: {
+          contentType: req.file.mimetype,
         },
-      };
+      });
 
-      await transaction.runUpdate(query);
-      await transaction.commit();
-      res.status(200).json({ message: 'Application submitted successfully!', applicationID });
-    });
-  } catch (err) {
-    console.error('Transaction ERROR:', err);
-    res.status(500).json({ error: 'Failed to submit application' });
+      blobStream.on('error', (err) => {
+        console.error('Error uploading file to GCS:', err);
+        res.status(500).json({ message: 'Failed to upload CV' });
+      });
+
+      blobStream.on('finish', () => {
+        cvUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+        console.log('File uploaded to GCS:', cvUrl);
+        submitApplication();
+      });
+
+      blobStream.end(req.file.buffer); // Upload the file buffer to GCS
+    } catch (err) {
+      console.error('Error handling file upload:', err);
+      return res.status(500).json({ message: 'Failed to process CV upload' });
+    }
+  } else {
+    submitApplication(); // No file uploaded, proceed to application submission
+  }
+
+  // Function to handle application submission
+  async function submitApplication() {
+    try {
+      await database.runTransactionAsync(async (transaction) => {
+        const query = {
+          sql: `INSERT INTO Applications (ApplicationID, OpportunityID, UserID, ApplicationDate, MotivationLetter, CVUrl)
+                VALUES (@applicationID, @opportunityID, @userID, PENDING_COMMIT_TIMESTAMP(), @motivationLetter, @cvUrl)`,
+          params: {
+            applicationID,
+            opportunityID,
+            userID: req.user.userId,
+            motivationLetter,
+            cvUrl,
+          },
+        };
+
+        await transaction.runUpdate(query);
+        await transaction.commit();
+        res.status(200).json({ message: 'Application submitted successfully!', applicationID });
+      });
+    } catch (err) {
+      console.error('Transaction ERROR:', err);
+      res.status(500).json({ error: 'Failed to submit application' });
+    }
   }
 });
 
