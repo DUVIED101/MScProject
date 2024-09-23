@@ -15,7 +15,7 @@ function ApplicationsByUserPage() {
       }
 
       try {
-        // Fetch the user's applications
+        // Getting the user's applications
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_OPPORTUNITY_URL}/api/my-applications`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -24,7 +24,7 @@ function ApplicationsByUserPage() {
 
         const applicationsWithDetails = await Promise.all(
           response.data.map(async (application) => {
-            // Fetch opportunity details for each application
+            // Getting opportunity details for each application
             const opportunityResponse = await axios.get(`${process.env.REACT_APP_BACKEND_OPPORTUNITY_URL}/api/opportunities/${application.OpportunityID}`, {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -33,7 +33,7 @@ function ApplicationsByUserPage() {
             
             return {
               ...application,
-              OpportunityTitle: opportunityResponse.data.Title,  // Add the opportunity title
+              OpportunityTitle: opportunityResponse.data.Title,
             };
           })
         );
@@ -58,8 +58,10 @@ function ApplicationsByUserPage() {
               <p><strong>Opportunity:</strong> {application.OpportunityTitle}</p>
               <p><strong>Application Date:</strong> {new Date(application.ApplicationDate).toLocaleString()}</p>
               <p><strong>Motivation Letter:</strong> {application.MotivationLetter}</p>
-              {application.CV && (
-                <p><strong>CV:</strong> <a href={application.CV} target="_blank" rel="noopener noreferrer">Download CV</a></p>
+              {application.CVUrl && (
+                <p>
+                  <strong>CV:</strong> <a href={application.CVUrl} target="_blank" rel="noopener noreferrer">Download CV</a>
+                </p>
               )}
             </li>
           ))}

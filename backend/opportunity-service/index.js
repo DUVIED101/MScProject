@@ -210,7 +210,7 @@ app.post('/api/opportunities/:id/apply', authenticateToken, upload.single('cv'),
       });
 
       blobStream.on('finish', () => {
-        cvUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+        cvUrl = `https://storage.cloud.google.com/${bucket.name}/${blob.name}`;
         console.log('File uploaded to GCS:', cvUrl);
         submitApplication();
       });

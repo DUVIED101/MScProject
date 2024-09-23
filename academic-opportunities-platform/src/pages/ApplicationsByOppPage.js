@@ -42,6 +42,11 @@ function ApplicationsByOppPage() {
               <p><strong>User ID:</strong> {application.UserID}</p>
               <p><strong>Application Date:</strong> {new Date(application.ApplicationDate).toLocaleString()}</p>
               <p><strong>Motivation Letter:</strong> {application.MotivationLetter}</p>
+              {application.CVUrl && (
+                <p>
+                  <strong>CV:</strong> <a href={application.CVUrl} target="_blank" rel="noopener noreferrer">Download CV</a>
+                </p>
+              )}
             </li>
           ))}
         </ul>
