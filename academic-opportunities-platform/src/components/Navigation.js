@@ -30,6 +30,9 @@ function Navigation() {
               <Link to="/search">Search Opportunities</Link>
             </li>
             <li>
+            <Link to="/conversations">Messages</Link>
+            </li>
+            <li>
               <button onClick={handleLogout}>Logout</button>
             </li>
           </>

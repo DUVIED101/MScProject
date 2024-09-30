@@ -21,14 +21,14 @@ const instance = spanner.instance(process.env.SPANNER_INSTANCE_ID);
 const database = instance.database(process.env.SPANNER_DATABASE_ID);
 
 const storage = new Storage();
-const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
+const bucket = storage.bucket(process.env.BUCKET_NAME);
 
-const upload = multer({
-  storage: multer.memoryStorage(), // Store files in memory before uploading to GCS
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB file size limit
+const upload = multer({ //creating file storage
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, 
 });
 
-// Middleware to check JWT and authenticate user via User Service
+// Middleware to check JWT
 async function authenticateToken(request, response, next) {
   const token = request.headers['authorization'];
   if (!token) {
@@ -215,7 +215,7 @@ app.post('/api/opportunities/:id/apply', authenticateToken, upload.single('cv'),
         submitApplication();
       });
 
-      blobStream.end(req.file.buffer); // Upload the file buffer to GCS
+      blobStream.end(req.file.buffer); // Uploadign the file buffer to GCS
     } catch (err) {
       console.error('Error handling file upload:', err);
       return res.status(500).json({ message: 'Failed to process CV upload' });

@@ -13,6 +13,8 @@ import OpportunityDetailPage from './pages/OpportunityDetailPage';
 import ApplicationFormPage from './pages/ApplicationFormPage';
 import ApplicationsByOppPage from './pages/ApplicationsByOppPage';
 import ApplicationsByUserPage from './pages/ApplicationsByUserPage';
+import ConversationsPage from './pages/ConversationsPage';
+import ChatPage from './pages/ChatPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function AppRouter() {
@@ -53,6 +55,8 @@ function AppRouter() {
         <Route path="/opportunities/:opportunityID/apply" element={<ApplicationFormPage />} />
         <Route path="/opportunities/:id/applications" element={<ApplicationsByOppPage />} />
         <Route path="/my-applications" element={<ApplicationsByUserPage />} />
+        <Route path="/conversations" element={<ConversationsPage />} /> 
+        <Route path="/conversations/:conversationID" element={<ChatPage />} /> 
       </Routes>
     </Router>
   );
