@@ -193,7 +193,6 @@ app.post('/api/opportunities/:id/apply', authenticateToken, upload.single('cv'),
     return res.status(400).json({ message: 'Motivation letter is required' });
   }
 
-  // If a CV is uploaded, upload it to GCS
   if (req.file) {
     try {
       const blob = bucket.file(`cvs/${applicationID}-${req.file.originalname}`);
@@ -221,7 +220,7 @@ app.post('/api/opportunities/:id/apply', authenticateToken, upload.single('cv'),
       return res.status(500).json({ message: 'Failed to process CV upload' });
     }
   } else {
-    submitApplication(); // No file uploaded, proceed to application submission
+    submitApplication();
   }
 
   // Function to handle application submission

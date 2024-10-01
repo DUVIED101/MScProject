@@ -14,7 +14,6 @@ const PORT = process.env.PORT || 5001;
 app.use(bodyParser.json());
 app.use(cors());
 
-// Initialize Google Cloud Spanner
 const spanner = new Spanner({
   projectId: process.env.SPANNER_PROJECT_ID,
 });
@@ -40,8 +39,6 @@ app.post('/api/auth/register', async (req, res) => {
 
   try {
     const userId = uuidv4();
-
-    // The following code hashes the password using bcrypt lib
     const hashedPassword = await bcrypt.hash(password, 10); 
 
     await database.runTransactionAsync(async (transaction) => {
@@ -82,17 +79,14 @@ app.post('/api/auth/login', async (req, res) => {
     if (rows.length === 0) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
-
     const user = rows[0].toJSON();
-
-    // Compare the passwords
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // Generate a JWT token
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // Generation of a a JWT token
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '12h' });
     res.json({ token });
   } catch (error) {
     console.error('Login error:', error);
@@ -133,7 +127,7 @@ app.get('/api/auth/profile', authenticateToken, async (req, res) => {
 
 // Token verification endpoint
 app.get('/api/auth/verify', authenticateToken, (req, res) => {
-  res.json(req.user);  // Send back the user data if token is valid
+  res.json(req.user); 
 });
 
 // Start the server

@@ -45,14 +45,9 @@ const ConversationsPage = () => {
         },
       });
 
-      const { conversationID } = response.data; // Get conversation ID from API response
-
+      const { conversationID } = response.data;
       alert('Conversation created successfully!');
-
-      // Navigate to the newly created conversation
       navigate(`/conversations/${conversationID}`);
-
-      // Optionally, refetch conversations to update the list
       fetchConversations();
     } catch (error) {
       alert('Failed to create conversation');

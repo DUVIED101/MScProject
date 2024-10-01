@@ -5,13 +5,13 @@ import axios from 'axios';
 function ApplicationFormPage() {
   const { opportunityID } = useParams();
   const [motivationLetter, setMotivationLetter] = useState('');
-  const [cvFile, setCvFile] = useState(null);  // State to store the uploaded CV file
+  const [cvFile, setCvFile] = useState(null); 
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
 
   const handleFileChange = (e) => {
-    setCvFile(e.target.files[0]);  // Store the selected file in state
+    setCvFile(e.target.files[0]);
   };
 
   const handleApply = async (e) => {
@@ -23,7 +23,7 @@ function ApplicationFormPage() {
       return navigate('/login');
     }
 
-    //object to handling the file and other form data
+    //object for handling the files
     const formData = new FormData();
     formData.append('motivationLetter', motivationLetter);
     if (cvFile) {
@@ -37,7 +37,7 @@ function ApplicationFormPage() {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',  // Required for file uploads
+            'Content-Type': 'multipart/form-data',
           },
         }
       );
@@ -66,7 +66,7 @@ function ApplicationFormPage() {
           ></textarea>
         </div>
         <div>
-          <label>Upload CV (optional)</label>
+          <label>Upload CV </label>
           <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileChange} />
         </div>
         <button type="submit">Submit Application</button>

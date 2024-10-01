@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-//import './SearchPage.css';
 
 function SearchPage() {
   const [title, setTitle] = useState('');
+  const [location, setLocation] = useState('');
   const [educationLevel, setEducationLevel] = useState('');
-  const [subjectFilters, setSubjectFilters] = useState('');
+  const [subjectFilters, setSubjectFilters] = useState([]);
   const [results, setResults] = useState([]);
   const [error, setError] = useState('');
 
-  // Get all opportunities by default on page load
   useEffect(() => {
     const fetchAllOpportunities = async () => {
       try {
@@ -32,8 +31,9 @@ function SearchPage() {
       const response = await axios.get(`${process.env.REACT_APP_BACKEND_SEARCH_URL}/api/opportunities/search`, {
         params: {
           title,
+          location,
           educationLevel,
-          subjectFilters,
+          subjectFilters: subjectFilters.join(',')
         },
       });
       setResults(response.data);
@@ -42,6 +42,22 @@ function SearchPage() {
       setResults([]);
       setError('No matching opportunities found');
     }
+  };
+
+  const handleSubjectFilterChange = (e) => {
+    const { options } = e.target;
+    const selectedFilters = Array.from(options)
+      .filter(option => option.selected)
+      .map(option => option.value);
+    setSubjectFilters(selectedFilters);
+  };
+
+  const handleClearFilters = () => {
+    setTitle('');
+    setLocation('');
+    setEducationLevel('');
+    setSubjectFilters([]);
+    window.location.reload();
   };
 
   return (
@@ -54,13 +70,16 @@ function SearchPage() {
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
           </div>
           <div>
+            <label>Location</label>
+            <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} />
+          </div>
+          <div>
             <label>Education Level</label>
             <input type="text" value={educationLevel} onChange={(e) => setEducationLevel(e.target.value)} />
           </div>
           <div>
-            <label>Subject Filters (comma separated)</label>
-            <select onChange={(e) => setSubjectFilters(e.target.value)}>
-              <option value="">--Select Subject--</option>
+            <label>Subject Filters (hold CTRL/Command for multiple)</label>
+            <select multiple onChange={handleSubjectFilterChange} value={subjectFilters}>
               <option value="Math">Math</option>
               <option value="Computer Science">Computer Science</option>
               <option value="Software Engineering">Software Engineering</option>
@@ -69,6 +88,9 @@ function SearchPage() {
             </select>
           </div>
           <button type="submit">Search</button>
+          <button type="button" onClick={handleClearFilters} style={{ marginLeft: '10px' }}>
+            Clear Filters
+          </button>
         </form>
       </div>
 
@@ -80,11 +102,11 @@ function SearchPage() {
           <ul>
             {results.map((opportunity) => (
               <li key={opportunity.OpportunityID}>
-                <h3> {/* Link to the detail page with opportunity ID */}
+                <h3>
                   <Link to={`/opportunities/${opportunity.OpportunityID}`}>
-                  {opportunity.Title}
+                    {opportunity.Title}
                   </Link>
-                  </h3>
+                </h3>
                 <p>{opportunity.Description}</p>
                 <p><strong>Deadline:</strong> {opportunity.Deadline}</p>
               </li>

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode'; // Fix import
+import {jwtDecode} from 'jwt-decode';
 
 const ChatPage = () => {
   const { conversationID } = useParams();
-  const [messages, setMessages] = useState([]);  // Initialize as an array
+  const [messages, setMessages] = useState([]); 
   const [newMessage, setNewMessage] = useState('');
   const [error, setError] = useState('');
 
@@ -23,8 +23,6 @@ const ChatPage = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        // Make sure response.data is an array before setting it
         setMessages(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         setError('Failed to fetch messages');
@@ -39,27 +37,23 @@ const ChatPage = () => {
     if (!newMessage.trim()) return;
   
     try {
-      // Decode the token to get the user information
-      const decodedToken = jwtDecode(token);
-      const senderID = decodedToken.userId; // Assuming userId is in the token
-      const senderName = "You"; // For display purposes on the UI
-  
       await axios.post(`${process.env.REACT_APP_BACKEND_MESSAGING_URL}/api/conversations/${conversationID}/messages`, {
-        senderID,  // Pass the senderID to the backend
+        senderID: jwtDecode(token).userId,
         messageContent: newMessage,
       }, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-  
-      // Clear the input and append the new message
       setNewMessage('');
-      setMessages([...messages, { messageContent: newMessage, SenderName: senderName }]); 
+      window.location.reload();
     } catch (error) {
       setError('Failed to send message');
     }
   };
+  
+  
+  
   
 
   return (

@@ -6,7 +6,7 @@ function OpportunityDetailPage() {
   const { opportunityID } = useParams();
   const [opportunity, setOpportunity] = useState(null);
   const [error, setError] = useState('');
-  const [isCreator, setIsCreator] = useState(false);  // State to track if the logged-in user is the creator
+  const [isCreator, setIsCreator] = useState(false); 
 
   useEffect(() => {
     const fetchOpportunityDetails = async () => {
@@ -17,8 +17,8 @@ function OpportunityDetailPage() {
         return;
       }
 
+      // Getting opportunity details
       try {
-        // Fetch opportunity details
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_OPPORTUNITY_URL}/api/opportunities/${opportunityID}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -27,15 +27,15 @@ function OpportunityDetailPage() {
 
         setOpportunity(response.data);
 
-        // Fetch the current user profile to check if they are the creator
+        // Getting the current usr
         const userProfile = await axios.get(`${process.env.REACT_APP_BACKEND_USER_URL}/api/auth/profile`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        // Check if the current user is the creator of the opportunity
-        setIsCreator(userProfile.data.id === response.data.PostedBy);  // Match userId with opportunity's PostedBy
+        // Checking if the user iscreator of the opportunity
+        setIsCreator(userProfile.data.id === response.data.PostedBy); 
       } catch (error) {
         console.error('Error fetching opportunity details or user profile:', error);
         setError('Failed to fetch opportunity details');
@@ -58,14 +58,11 @@ function OpportunityDetailPage() {
           <p><strong>Education Level:</strong> {opportunity.EducationLevel}</p>
           <p><strong>Subjects:</strong> {opportunity.SubjectFilters.join(', ')}</p>
 
-          {/* Show the apply button if the user is not the creator */}
           {!isCreator && (
             <Link to={`/opportunities/${opportunity.OpportunityID}/apply`}>
               <button>Apply for this Opportunity</button>
             </Link>
           )}
-
-          {/* Conditionally show the button if the logged-in user is the creator of the opportunity */}
           {isCreator && (
             <div style={{ marginTop: '20px' }}>
               <Link to={`/opportunities/${opportunity.OpportunityID}/applications`}>
@@ -77,8 +74,6 @@ function OpportunityDetailPage() {
       ) : (
         !error && <p>Loading opportunity details...</p>
       )}
-
-      {/* Show a 404 error if no opportunity is found */}
       {error === 'Failed to fetch opportunity details' && (
         <div>
           <h2>404: Opportunity Not Found</h2>

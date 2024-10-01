@@ -28,7 +28,7 @@ nav li a:hover, nav li button:hover {
 }
 
 nav li button {
-  font-family: inherit; /* Ensures the button text uses the same font as the rest of the navigation */
-  font-size: inherit; /* Inherits the font size */
-  color: white; /* Ensures the color matches */
+  font-family: inherit; 
+  font-size: inherit; 
+  color: white; 
 }

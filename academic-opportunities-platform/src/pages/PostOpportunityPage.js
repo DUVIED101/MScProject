@@ -40,7 +40,6 @@ function PostOpportunityPage() {
 
       setSuccessMessage('Opportunity posted successfully!');
       setError(null);
-      // Clear the form after successful post
       setTitle('');
       setDescription('');
       setLocation('');

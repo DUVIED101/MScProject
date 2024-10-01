@@ -6,7 +6,7 @@ function ApplicationsByOppPage() {
   const { id } = useParams(); 
   const [applications, setApplications] = useState([]);
   const [error, setError] = useState('');
-  const creatorID = localStorage.getItem('userID'); // or however you store the user data
+  const creatorID = localStorage.getItem('userID');
 
   useEffect(() => {
     const fetchApplications = async () => {

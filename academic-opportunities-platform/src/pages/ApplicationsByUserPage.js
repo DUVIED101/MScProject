@@ -14,17 +14,17 @@ function ApplicationsByUserPage() {
         return;
       }
 
+      // Getting the user applications
       try {
-        // Getting the user's applications
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_OPPORTUNITY_URL}/api/my-applications`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
+        // Getting opportunity details for each application
         const applicationsWithDetails = await Promise.all(
           response.data.map(async (application) => {
-            // Getting opportunity details for each application
             const opportunityResponse = await axios.get(`${process.env.REACT_APP_BACKEND_OPPORTUNITY_URL}/api/opportunities/${application.OpportunityID}`, {
               headers: {
                 Authorization: `Bearer ${token}`,
