@@ -22,7 +22,7 @@ function PostOpportunityPage() {
       return navigate('/login');
     }
 
-    const subjectArray = subjectFilters.split(',').map(subject => subject.trim()); // Process subjects as an array
+    const subjectArray = subjectFilters.split(',').map(subject => subject.trim());
 
     try {
       const response = await axios.post(`${process.env.REACT_APP_BACKEND_OPPORTUNITY_URL}/api/opportunities`, {

@@ -284,6 +284,9 @@ app.get('/api/opportunities/:id/applications', authenticateToken, async (req, re
   }
 });
 
+module.exports = app;
+module.exports = { authenticateToken };
+
 // Start the server
 const PORT = process.env.PORT || 5002;
 app.listen(PORT, () => {
