@@ -1,0 +1,7 @@
+runtime: nodejs20
+service: messaging-service
+entrypoint: node index.js
+
+handlers:
+  - url: /.*
+    script: auto

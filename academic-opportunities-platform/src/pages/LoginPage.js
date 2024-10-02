@@ -21,7 +21,7 @@ function LoginPage() {
         email,
         password,
       });
-      login(response.data.token); //function to update context
+      login(response.data.token);
       navigate('/profile');
     } catch (error) {
       setError(error.response ? error.response.data.message : 'Login failed');

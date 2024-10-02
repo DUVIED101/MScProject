@@ -14,13 +14,31 @@ function ApplicationsByUserPage() {
         return;
       }
 
+      // Getting the user applications
       try {
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_OPPORTUNITY_URL}/api/my-applications`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setApplications(response.data);
+
+        // Getting opportunity details for each application
+        const applicationsWithDetails = await Promise.all(
+          response.data.map(async (application) => {
+            const opportunityResponse = await axios.get(`${process.env.REACT_APP_BACKEND_OPPORTUNITY_URL}/api/opportunities/${application.OpportunityID}`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+            
+            return {
+              ...application,
+              OpportunityTitle: opportunityResponse.data.Title,
+            };
+          })
+        );
+
+        setApplications(applicationsWithDetails);
       } catch (error) {
         setError('Failed to fetch your applications');
       }
@@ -37,9 +55,14 @@ function ApplicationsByUserPage() {
         <ul>
           {applications.map((application) => (
             <li key={application.ApplicationID}>
-              <p><strong>Opportunity ID:</strong> {application.OpportunityID}</p>
+              <p><strong>Opportunity:</strong> {application.OpportunityTitle}</p>
               <p><strong>Application Date:</strong> {new Date(application.ApplicationDate).toLocaleString()}</p>
               <p><strong>Motivation Letter:</strong> {application.MotivationLetter}</p>
+              {application.CVUrl && (
+                <p>
+                  <strong>CV:</strong> <a href={application.CVUrl} target="_blank" rel="noopener noreferrer">Download CV</a>
+                </p>
+              )}
             </li>
           ))}
         </ul>

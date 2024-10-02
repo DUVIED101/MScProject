@@ -1,0 +1,7 @@
+runtime: nodejs20
+service: opportunity-service
+entrypoint: node index.js
+
+handlers:
+  - url: /.*
+    script: auto

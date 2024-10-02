@@ -47,7 +47,7 @@ function EditOpportunityPage() {
         location,
         deadline,
         educationLevel,
-        subjectFilters: subjectFilters.split(',').map(f => f.trim()), // Convert to array
+        subjectFilters: subjectFilters.split(',').map(f => f.trim()),
       }, {
         headers: { Authorization: `Bearer ${token}` },
       });

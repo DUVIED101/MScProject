@@ -29,6 +29,7 @@ function authenticateToken(req, res, next) {
     next();
   });
 }
+
 // Endpoint for getting all opportunities
 app.get('/api/opportunities', async (req, res) => {
   try {
@@ -53,29 +54,22 @@ app.get('/api/opportunities/search', async (req, res) => {
              FROM Opportunities WHERE 1=1`;
 
   const params = {};
-  
-  // Filtering by title
+  //Filters:
   if (title) {
-    sql += ` AND Title LIKE @title`;
+    sql += ` AND LOWER(Title) LIKE LOWER(@title)`;
     params.title = `%${title}%`;
   }
-
-  // Filtering by location
   if (location) {
-    sql += ` AND Location LIKE @location`;
+    sql += ` AND LOWER(Location) LIKE LOWER(@location)`;
     params.location = `%${location}%`;
   }
-
-  // Filtering by education level
   if (educationLevel) {
     sql += ` AND EducationLevel = @educationLevel`;
     params.educationLevel = educationLevel;
   }
-
-  // Filtering by subject filters (handling array)
   if (subjectFilters) {
     const subjectsArray = subjectFilters.split(',').map(s => s.trim());
-    sql += ` AND ARRAY(SELECT subject FROM UNNEST(SubjectFilters)) && @subjectFilters`;
+    sql += ` AND EXISTS (SELECT subject FROM UNNEST(SubjectFilters) AS subject WHERE subject IN UNNEST(@subjectFilters))`;
     params.subjectFilters = subjectsArray;
   }
 
@@ -96,6 +90,7 @@ app.get('/api/opportunities/search', async (req, res) => {
     res.status(500).json({ message: 'Failed to find opportunities' });
   }
 });
+
 
 // Endpoint for Opportunity details
 app.get('/api/opportunities/:opportunityID', authenticateToken, async (req, res) => {

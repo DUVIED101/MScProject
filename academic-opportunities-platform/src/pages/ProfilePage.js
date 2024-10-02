@@ -21,7 +21,6 @@ function ProfilePage() {
         setProfile(data);
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          // Token expired or invalid
           localStorage.removeItem('token');
           navigate('/login');
         } else {

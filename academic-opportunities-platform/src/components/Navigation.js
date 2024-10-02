@@ -15,9 +15,6 @@ function Navigation() {
   return (
     <nav>
       <ul>
-        <li>
-          <Link to="/">Home</Link>
-        </li>
         {isLoggedIn ? (
           <>
             <li>
@@ -28,6 +25,9 @@ function Navigation() {
             </li>
             <li>
               <Link to="/search">Search Opportunities</Link>
+            </li>
+            <li>
+            <Link to="/conversations">Messages</Link>
             </li>
             <li>
               <button onClick={handleLogout}>Logout</button>

@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token); // Check if token exists and update the state
+    setIsLoggedIn(!!token);
   }, []);
 
   const login = (token) => {

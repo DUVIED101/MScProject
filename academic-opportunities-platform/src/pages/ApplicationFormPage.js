@@ -5,9 +5,14 @@ import axios from 'axios';
 function ApplicationFormPage() {
   const { opportunityID } = useParams();
   const [motivationLetter, setMotivationLetter] = useState('');
+  const [cvFile, setCvFile] = useState(null); 
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
+
+  const handleFileChange = (e) => {
+    setCvFile(e.target.files[0]);
+  };
 
   const handleApply = async (e) => {
     e.preventDefault();
@@ -18,18 +23,29 @@ function ApplicationFormPage() {
       return navigate('/login');
     }
 
+    //object for handling the files
+    const formData = new FormData();
+    formData.append('motivationLetter', motivationLetter);
+    if (cvFile) {
+      formData.append('cv', cvFile);
+    }
+
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_OPPORTUNITY_URL}/api/opportunities/${opportunityID}/apply`, {
-        motivationLetter,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_OPPORTUNITY_URL}/api/opportunities/${opportunityID}/apply`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
 
       setSuccessMessage('Application submitted successfully!');
       setError('');
       setMotivationLetter('');
+      setCvFile(null); 
     } catch (error) {
       setError('Failed to submit application. Please try again.');
     }
@@ -50,6 +66,8 @@ function ApplicationFormPage() {
           ></textarea>
         </div>
         <div>
+          <label>Upload CV </label>
+          <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileChange} />
         </div>
         <button type="submit">Submit Application</button>
       </form>
